@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <title>控制中枢 - 欲宝Remix</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdn.jsdelivr.net/npm/font-awesome@4.7.0/css/font-awesome.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body id="page-admin-merged" class="flex items-center justify-center min-h-screen relative overflow-hidden text-gray-200">
+    
+    <div class="absolute top-1/4 left-1/4 w-[30rem] h-[30rem] bg-blue-600/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+    <div class="absolute bottom-1/4 right-1/4 w-[30rem] h-[30rem] bg-purple-600/20 rounded-full blur-[120px] -z-10 pointer-events-none"></div>
+
+    <div id="login-section" class="w-full max-w-sm p-8 liquid-glass rounded-3xl z-10 mx-4 hidden transition-opacity duration-500">
+        <div class="text-center mb-8">
+            <div class="w-16 h-16 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-[0_0_30px_rgba(59,130,246,0.4)] rotate-3">
+                <i class="fa fa-unlock-alt text-2xl text-white -rotate-3"></i>
+            </div>
+            <h2 class="text-2xl font-bold text-white tracking-wider">控制台准入</h2>
+        </div>
+
+        <form id="loginForm" class="space-y-5">
+            <div>
+                <input type="text" name="username" placeholder="核心识别码 (账号默认admin)" required class="w-full glass-input rounded-xl p-4 text-sm">
+            </div>
+            <div>
+                <input type="password" name="password" placeholder="安全密钥 (密码默认123456)" required class="w-full glass-input rounded-xl p-4 text-sm">
+            </div>
+            <button type="submit" class="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-500 hover:to-purple-500 active:scale-95 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/30 text-white mt-4">
+                验 证 身 份
+            </button>
+            <div id="loginStatus" class="text-center text-sm h-4"></div>
+        </form>
+        <div class="text-center mt-8">
+            <a href="https://music.yutinh.2bd.net/" class="text-gray-400 hover:text-white text-xs transition-colors"><i class="fa fa-angle-left mr-1"></i>返回访客大厅</a>
+        </div>
+    </div>
+
+    <div id="admin-section" class="w-full max-w-6xl mx-auto liquid-glass rounded-[2rem] p-6 md:p-10 z-10 m-4 hidden transition-opacity duration-500">
+        <div class="flex flex-col md:flex-row justify-between items-center mb-10 pb-6 border-b border-white/10 gap-4">
+            <h2 class="text-2xl font-bold text-white flex items-center">
+                <div class="w-8 h-8 bg-blue-500/20 rounded-lg flex items-center justify-center mr-3 border border-blue-500/30">
+                    <i class="fa fa-sliders text-blue-400 text-sm"></i>
+                </div>
+                控制中枢
+            </h2>
+            <div class="flex gap-4 items-center">
+                <a href="https://music.yutinh.2bd.net/" class="text-sm px-4 py-2 glass-card rounded-xl text-gray-300 hover:text-white transition-all"><i class="fa fa-home mr-1"></i>前台大厅</a>
+                <button id="logoutBtn" class="text-sm px-4 py-2 bg-red-500/10 border border-red-500/20 text-red-400 hover:bg-red-500/20 hover:text-red-300 rounded-xl transition-all"><i class="fa fa-sign-out mr-1"></i>断开连接</button>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-10">
+            <div class="lg:col-span-5">
+                <div class="glass-card rounded-2xl p-6">
+                    <h3 class="text-lg mb-6 text-white font-medium flex items-center"><i class="fa fa-cloud-upload text-blue-400 mr-2"></i> 上传新音源</h3>
+                    <form id="uploadForm" class="space-y-5">
+                        <input type="text" name="songName" placeholder="作品名称 (留空则用原名)" class="w-full glass-input rounded-xl p-4 text-sm">
+                        <div class="relative group mt-2">
+                            <input type="file" name="musicFile" class="hidden" id="fileInput" accept=".mp3,.wav,.ogg">
+                            <label for="fileInput" class="flex flex-col items-center justify-center border-2 border-dashed border-white/20 rounded-xl p-10 cursor-pointer hover:border-blue-400 hover:bg-blue-500/5 transition-all">
+                                <i class="fa fa-music text-4xl mb-4 text-gray-500 group-hover:text-blue-400 transition-colors"></i>
+                                <span id="fileNameDisplay" class="text-sm text-gray-400 text-center font-medium">点击此处选择音频文件</span>
+                            </label>
+                        </div>
+                        <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-500 active:scale-95 py-4 rounded-xl font-bold transition-all shadow-lg shadow-blue-500/20 text-white">
+                            发 布 至 库
+                        </button>
+                        <div id="uploadStatus" class="text-center text-sm font-medium h-4"></div>
+                    </form>
+                </div>
+            </div>
+
+            <div class="lg:col-span-7">
+                <div class="glass-card rounded-2xl p-6 h-full flex flex-col">
+                    <div class="flex justify-between items-center mb-6">
+                        <h3 class="text-lg text-white font-medium flex items-center"><i class="fa fa-database text-purple-400 mr-2"></i> 库内资源</h3>
+                        <button onclick="loadAdminMusicList()" class="text-xs text-blue-300 hover:text-white glass-card px-3 py-1.5 rounded-lg transition-all"><i class="fa fa-refresh mr-1"></i>刷新重载</button>
+                    </div>
+                    <div id="adminMusicList" class="space-y-3 flex-1 max-h-[500px] overflow-y-auto pr-2 custom-scrollbar">
+                        </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="main.js"></script>
+</body>
+</html>
